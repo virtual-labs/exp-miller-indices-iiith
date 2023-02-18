@@ -16,6 +16,7 @@ import {
   select_Region,
   CreatePlaneByAtoms,
   VerifyMiller,
+  createLattice,
 } from './utils.js'
 
 var container = document.getElementById('canvas-main')
@@ -26,7 +27,7 @@ var camera = new THREE.PerspectiveCamera(
   0.1,
   1000,
 )
-camera.position.set(10, 10, 10)
+camera.position.set(20, 20, 20)
 
 // init the renderer and the scene
 
@@ -105,12 +106,50 @@ var atomList = []
 
 var SelectAtomList = []
 var BoundaryAtomList = []
+var CurrentHull
+var CurrentHullMesh
+var HullMeshList = []
 
 var currentatom = document.getElementById('atomtype')
 var atomtype = currentatom.options[currentatom.selectedIndex].text
 
-// var currentlattice = document.getElementById('latticetype')
-// var latticetype = currentlattice.options[currentlattice.selectedIndex].text
+const LatticeList = [
+  'Simple Cubic',
+  'Face Centered Cubic',
+  'Body Centered Cubic',
+  'Hexagonal Packing',
+]
+var currentLatticeElement = document.getElementById('LatticeList')
+var currentLattice =
+  currentLatticeElement.options[currentLatticeElement.selectedIndex].text
+
+let currentAtomList = createLattice(LatticeList.indexOf(currentLattice))
+for (let i = 0; i < currentAtomList.length; i++) {
+  //   console.log(currentAtomList[i])
+  scene.add(currentAtomList[i])
+  atomList.push(currentAtomList[i])
+}
+currentLatticeElement.addEventListener('click', function () {
+  currentLattice =
+    currentLatticeElement.options[currentLatticeElement.selectedIndex].text
+  // console.log('lattice change to', currentLattice)
+  for (let i = 0; i < currentAtomList.length; i++) {
+    scene.remove(currentAtomList[i])
+  }
+  currentAtomList = []
+  for (let i = 0; i < HullMeshList.length; i++) {
+    scene.remove(HullMeshList[i])
+  }
+  HullMeshList = []
+  atomList = []
+  currentAtomList = createLattice(LatticeList.indexOf(currentLattice))
+
+  for (let i = 0; i < currentAtomList.length; i++) {
+    // console.log(currentAtomList[i])
+    scene.add(currentAtomList[i])
+    atomList.push(currentAtomList[i])
+  }
+})
 
 var currentmiller = document.getElementById('millertype')
 var millertype = currentmiller.options[currentmiller.selectedIndex].text
@@ -131,17 +170,17 @@ const millertypelist = [
 // const gridHelper = new THREE.GridHelper(size, divisions)
 // scene.add(gridHelper)
 function createAGrid(opts) {
-  var gridXZ = new THREE.GridHelper(10, 10, 0xffffff, 0x00ff00)
+  var gridXZ = new THREE.GridHelper(22, 22, 0xffffff, 0x00ff00)
   // gridXZ.scale.set(1, 0.5, 0.25);
   scene.add(gridXZ)
 
-  var gridXY = new THREE.GridHelper(10, 10, 0xffffff, 0x0000ff)
+  var gridXY = new THREE.GridHelper(22, 22, 0xffffff, 0x0000ff)
   // gridXY.position.z = -31, 25
   // gridXY.position.y = 125
   gridXY.rotation.x = Math.PI / 2
   scene.add(gridXY)
 
-  var gridYZ = new THREE.GridHelper(10, 10, 0xffffff, 0xff0000)
+  var gridYZ = new THREE.GridHelper(22, 22, 0xffffff, 0xff0000)
   // gridYZ.position.x = -125
   // gridYZ.position.y = 125
   gridYZ.rotation.z = Math.PI / 2
@@ -167,49 +206,13 @@ CreatePlane.addEventListener('click', function () {
 
 const CheckMiller = document.getElementById('CheckMiller')
 CheckMiller.addEventListener('click', function () {
+  let lbl = document.getElementById('miller-result')
   if (VerifyMiller(currentPlane, millertype) == 1) {
-    alert('correct')
+    lbl.innerHTML = "<span style='color: green;'>Correct</span>"
   } else {
-    alert('incorrect')
+    lbl.innerHTML = "<span style='color: red;'>InCorrect</span>"
   }
 })
-// var CurrentHull
-// var CurrentHullMesh
-// var HullList = []
-// // select region enclosed between the atoms
-// const selectRegion = document.getElementById('SelectRegion')
-// selectRegion.addEventListener('click', function () {
-//   if (action != 'selectRegion') {
-//     action = 'selectRegion'
-//   } else {
-//     action = ''
-//     for (let i = 0; i < HullList.length; i++) {
-//       scene.remove(HullList[i])
-//     }
-//   }
-//   let vals = select_Region(SelectAtomList, atomList)
-//   let hullmesh = vals.mesh
-//   CurrentHullMesh = vals.mesh
-//   let arr = vals.selectarray
-//   CurrentHull = vals.convexHull
-//   for (let i = 0; i < arr.length; i++) {
-//     SelectAtomList.push(arr[i])
-//   }
-//   //console.log(hullmesh);
-//   HullList.push(hullmesh)
-//   scene.add(hullmesh)
-// })
-
-// // respond to click addAtom
-// const addSphereButton = document.getElementById('AddAtom')
-// addSphereButton.addEventListener('click', function () {
-//   console.log('adding atom mode')
-//   if (action != 'addAtom') {
-//     action = 'addAtom'
-//   } else {
-//     action = ''
-//   }
-// })
 
 // respond to select a bunch of atoms
 const addSelectList = document.getElementById('SelectAtom')
@@ -222,125 +225,6 @@ addSelectList.addEventListener('click', function () {
     SelectAtomList = []
   }
 })
-
-// // respond to select all atoms
-// const addSelectAll = document.getElementById('SelectAll')
-// addSelectAll.addEventListener('click', function () {
-//   if (action != 'selectAll') {
-//     action = 'selectAll'
-//   } else {
-//     action = ''
-//     SelectAtomList = []
-//   }
-// })
-
-// // respond to check for SCP
-
-// const addCheckSC = document.getElementById('CheckSC')
-// addCheckSC.addEventListener('click', function () {
-//   console.log('checking SCP packing')
-//   var checkresult = checkSCP(latticetype, CurrentHull)
-//   if (checkresult) {
-//     document.getElementById('latticeCheck').innerHTML =
-//       "<span style='color: Green;'>Correct</span>"
-//   } else {
-//     document.getElementById('latticeCheck').innerHTML =
-//       "<span style='color: red;'>Incorrect</span>"
-//   }
-// })
-
-// // respond to add atom by coordinate
-// const formAdd = document.getElementById('addatom')
-// formAdd.addEventListener('submit', function () {
-//   console.log('adding atom')
-//   var vec = formAdd.elements
-//   var AddVec = new THREE.Vector3(
-//     parseFloat(vec[0].value),
-//     parseFloat(vec[1].value),
-//     parseFloat(vec[2].value),
-//   )
-//   var addedatom = addSphereAtCoordinate(AddVec, atomtype)
-//   console.log(AddVec, addedatom)
-//   scene.add(addedatom)
-//   atomList.push(addedatom)
-// })
-
-// // respond to add dummy atom by coordinate
-// const formAdddummy = document.getElementById('adddummyatom')
-// formAdddummy.addEventListener('submit', function () {
-//   console.log('adding dummy atom')
-//   var vec = formAdddummy.elements
-//   var AddVec = new THREE.Vector3(
-//     parseFloat(vec[0].value),
-//     parseFloat(vec[1].value),
-//     parseFloat(vec[2].value),
-//   )
-//   var addedatom = addSphereAtCoordinate(AddVec, 'dummy')
-//   console.log(AddVec, addedatom)
-//   scene.add(addedatom)
-//   atomList.push(addedatom)
-// })
-
-// // respond to repeat
-// const formRepeat = document.getElementById('repeat')
-// formRepeat.addEventListener('submit', function () {
-//   console.log('repeating')
-//   var vec = formRepeat.elements
-//   var repeatVec = new THREE.Vector3(
-//     parseFloat(vec[0].value),
-//     parseFloat(vec[1].value),
-//     parseFloat(vec[2].value),
-//   )
-//   var newAtoms = RepeatPattern(SelectAtomList, repeatVec)
-//   console.log(repeatVec, newAtoms)
-//   for (let i = 0; i < newAtoms.length; i++) {
-//     scene.add(newAtoms[i])
-//     atomList.push(newAtoms[i])
-//   }
-//   SelectAtomList = []
-//   for (let i = 0; i < HullList.length; i++) {
-//     scene.remove(HullList[i])
-//   }
-// })
-
-// // respond to translate
-// const formTranslate = document.getElementById('translate')
-// formTranslate.addEventListener('submit', function () {
-//   console.log('translating')
-//   var vec = formTranslate.elements
-//   var translateVec = new THREE.Vector3(
-//     parseFloat(vec[0].value),
-//     parseFloat(vec[1].value),
-//     parseFloat(vec[2].value),
-//   )
-//   var count = parseFloat(vec[3].value)
-//   var newAtoms = TranslatePattern(SelectAtomList, translateVec, count)
-//   console.log(translateVec, newAtoms)
-//   for (let i = 0; i < newAtoms.length; i++) {
-//     scene.add(newAtoms[i])
-//     atomList.push(newAtoms[i])
-//   }
-//   SelectAtomList = []
-//   for (let i = 0; i < HullList.length; i++) {
-//     scene.remove(HullList[i])
-//   }
-// })
-
-// // respond to move
-// const formMove = document.getElementById('move')
-// formMove.addEventListener('submit', function () {
-//   console.log('moving')
-//   var vec = formMove.elements
-//   var moveVector = new THREE.Vector3(
-//     parseFloat(vec[0].value),
-//     parseFloat(vec[1].value),
-//     parseFloat(vec[2].value),
-//   )
-//   moveSelectList(SelectAtomList, moveVector)
-//   console.log(moveVector, SelectAtomList)
-// })
-// const translateList = document.getElementById('TranslatePattern')
-// translateList.addEventListener('click', function () {})
 
 // make the window responsive
 window.addEventListener('resize', () => {
@@ -370,17 +254,6 @@ document.addEventListener('mouseup', function (event) {
   }
 })
 
-for (var x = 0; x < 3; x += 1) {
-  for (var y = 0; y < 3; y += 1) {
-    for (var z = 0; z < 3; z += 1) {
-      var AddVec = new THREE.Vector3(x, y, z)
-      var addedatom = addSphereAtCoordinate(AddVec, 'X')
-      // console.log(AddVec, addedatom)
-      scene.add(addedatom)
-      atomList.push(addedatom)
-    }
-  }
-}
 createAGrid()
 // console.log('added system')
 

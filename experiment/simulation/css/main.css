@@ -178,47 +178,124 @@
 #move-button {
   background-color: #48c774;
   border-radius: 0.5rem;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0px;
+}
+#atomtype {
+  background-color: white;
+  padding: 5px;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+  justify-content: center;
+  text-align: center;
+  border-radius: 0.5rem;
+  font-weight: bold;
+}
+#LatticeList {
+  background-color: white;
+  padding: 5px;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+  justify-content: center;
+  text-align: center;
+  border-radius: 0.5rem;
+  font-weight: bold;
 }
 
+#millertype {
+  background-color: white;
+  padding: 5px;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+  justify-content: center;
+  text-align: center;
+  border-radius: 0.5rem;
+  font-weight: bold;
+}
 #AddAtom {
   background-color: #48c774;
   border-radius: 0.5rem;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0px;
 }
 #SelectAtom {
   background-color: #48c774;
   border-radius: 0.5rem;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0px;
 }
 #SelectRegion {
   background-color: #48c774;
   border-radius: 0.5rem;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0px;
 }
-#SelectAll {
+#CreatePlane {
   background-color: #48c774;
   border-radius: 0.5rem;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0px;
 }
-#CheckSC {
+#CheckMiller {
   background-color: #48c774;
   border-radius: 0.5rem;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0px;
 }
 #AddAtomByCoordinate {
   background-color: #48c774;
   border-radius: 0.5rem;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0px;
 }
 #AddDummyAtomByCoordinate {
   background-color: #48c774;
   border-radius: 0.5rem;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0px;
 }
 #RepeatSelectedPattern {
   background-color: #48c774;
   border-radius: 0.5rem;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0px;
 }
 #TranslatePattern {
   background-color: #48c774;
   border-radius: 0.5rem;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0px;
 }
 #MoveSelectedPattern {
   background-color: #48c774;
   border-radius: 0.5rem;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0px;
 }
 #set-rotation-axis {
   background-color: #3298dc;

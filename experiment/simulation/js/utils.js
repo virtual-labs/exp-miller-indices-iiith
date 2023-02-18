@@ -7,6 +7,18 @@ var trueTypeOf = (obj) =>
 
 var radius_scale = 1 / 100
 var atomDetails = {
+  X: {
+    radius: 25,
+    color: '#5D3FD3',
+  },
+  Y: {
+    radius: 25,
+    color: '#5D3FD3',
+  },
+  Z: {
+    radius: 25,
+    color: '#5D3FD3',
+  },
   Zn: {
     radius: 135,
     color: '#a9a9a9',
@@ -30,10 +42,6 @@ var atomDetails = {
   C: {
     radius: 70,
     color: '#8fce00',
-  },
-  X: {
-    radius: 20,
-    color: '#a9a9a9',
   },
 }
 
@@ -194,7 +202,7 @@ export function CreatePlaneByAtoms(SelectAtomList) {
 
   console.log(plane)
   // Create a basic rectangle geometry
-  var planeGeometry = new THREE.PlaneGeometry(10, 10)
+  var planeGeometry = new THREE.PlaneGeometry(25, 25)
 
   // Align the geometry to the plane
   var coplanarPoint = new THREE.Vector3()
@@ -365,6 +373,122 @@ export function moveSelectList(SelectAtomList, moveVector) {
     //if(i==0) console.log(currpos.y);
     SelectAtomList[i].position.copy(currpos)
   }
+}
+
+export function createLattice(latticeID) {
+  let atomlist = []
+  if (latticeID == 0) {
+    console.log('simple cubic')
+    let latticedims = [10, 10, 10]
+    for (let x = 0; x < latticedims[0]; x += 2) {
+      for (let y = 0; y < latticedims[1]; y += 2) {
+        for (let z = 0; z < latticedims[2]; z += 2) {
+          let pos = new THREE.Vector3(x, y, z)
+          let atom = addSphereAtCoordinate(pos, 'X')
+          atomlist.push(atom)
+        }
+      }
+    }
+  } else if (latticeID == 1) {
+    console.log('adding face centered cubic')
+    let latticedims = [10, 10, 10]
+    for (let x = 0; x < latticedims[0]; x += 3) {
+      for (let y = 0; y < latticedims[1]; y += 3) {
+        for (let z = 0; z < latticedims[2]; z += 3) {
+          let pos = new THREE.Vector3(x, y, z)
+          let atom = addSphereAtCoordinate(pos, 'X')
+          atomlist.push(atom)
+        }
+      }
+    }
+    for (let x = 1.5; x < latticedims[0]; x += 3) {
+      for (let y = 1.5; y < latticedims[1]; y += 3) {
+        for (let z = 0; z < latticedims[2]; z += 3) {
+          let pos = new THREE.Vector3(x, y, z)
+          let atom = addSphereAtCoordinate(pos, 'X')
+          atomlist.push(atom)
+        }
+      }
+    }
+    for (let x = 1.5; x < latticedims[0]; x += 3) {
+      for (let y = 0; y < latticedims[1]; y += 3) {
+        for (let z = 1.5; z < latticedims[2]; z += 3) {
+          let pos = new THREE.Vector3(x, y, z)
+          let atom = addSphereAtCoordinate(pos, 'X')
+          atomlist.push(atom)
+        }
+      }
+    }
+    for (let x = 0; x < latticedims[0]; x += 3) {
+      for (let y = 1.5; y < latticedims[1]; y += 3) {
+        for (let z = 1.5; z < latticedims[2]; z += 3) {
+          let pos = new THREE.Vector3(x, y, z)
+          let atom = addSphereAtCoordinate(pos, 'X')
+          atomlist.push(atom)
+        }
+      }
+    }
+  } else if (latticeID == 2) {
+    console.log('adding body centered cubic')
+    let latticedims = [10, 10, 10]
+    for (let x = 0; x < latticedims[0]; x += 4) {
+      for (let y = 0; y < latticedims[1]; y += 4) {
+        for (let z = 0; z < latticedims[2]; z += 4) {
+          let pos = new THREE.Vector3(x, y, z)
+          let atom = addSphereAtCoordinate(pos, 'Y')
+          atomlist.push(atom)
+        }
+      }
+    }
+    for (let x = 2; x < latticedims[0]; x += 4) {
+      for (let y = 2; y < latticedims[1]; y += 4) {
+        for (let z = 2; z < latticedims[2]; z += 4) {
+          let pos = new THREE.Vector3(x, y, z)
+          let atom = addSphereAtCoordinate(pos, 'Y')
+          atomlist.push(atom)
+        }
+      }
+    }
+  } else if (latticeID == 3) {
+    console.log('adding HCP')
+    let latticedims = [10, 10, 10]
+    let height = 0
+    for (let z = 0; z < latticedims[2]; z += 1.732) {
+      if (height % 2 == 0) {
+        for (let x = 0; x < latticedims[0]; x += 2) {
+          let row = 0
+          for (let y = 0; y < latticedims[1]; y += 1.732) {
+            let pos
+            if (row % 2 == 0) {
+              pos = new THREE.Vector3(x, y, z)
+            } else {
+              pos = new THREE.Vector3(x + 1, y, z)
+            }
+            row += 1
+            let atom = addSphereAtCoordinate(pos, 'X')
+            atomlist.push(atom)
+          }
+        }
+      } else {
+        for (let x = 1; x < latticedims[0]; x += 2) {
+          let row = 0
+          for (let y = 0.577; y < latticedims[1]; y += 1.732) {
+            let pos
+            if (row % 2 == 0) {
+              pos = new THREE.Vector3(x, y, z)
+            } else {
+              pos = new THREE.Vector3(x + 1, y, z)
+            }
+            row += 1
+            let atom = addSphereAtCoordinate(pos, 'X')
+            atomlist.push(atom)
+          }
+        }
+      }
+      height += 1
+    }
+  }
+  return atomlist
 }
 
 export function checkSCP(latticetype, CurrentHull) {
