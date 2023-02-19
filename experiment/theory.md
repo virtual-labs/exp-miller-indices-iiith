@@ -3,7 +3,7 @@ Miller indices give a sense of direction and help specify planes in a lattice. A
 <p align="center">
   <img src="./images/Miller_example.jpg" alt="Square Lattice"/>
 </p>
-A zero index denotes that the intercept is at infinity, essentially meaning the plane is parallel to that primitive vector.
+A zero index denotes that the intercept is at infinity, essentially meaning the plane is parallel to that primitive vector. It is to be noted that [1,1,1] Miller index does not imply an intercept of magnitude 1 on all the vectors. Instead, it implies that the intercept of the plane on all the three vectors is of equal magnitude.
 
 ### Obtaining Miller indices from a given plane
 Given a plane and its equation, it is fairly straight forward to find its intercepts on the vectors. If these intercepts are integers with no common divisor, then those intercepts in order are the Miller indices. If there is a common divisor however, those numbers need to be divided by that divisor and then can be used as the indices. If the intercepts are fractional however, it is required that a lowest common multiple of the denominators is found and all the numbers multiplied by it. This way, it is possible to determine the Miller indices of a plane given its equation or its intercepts.
