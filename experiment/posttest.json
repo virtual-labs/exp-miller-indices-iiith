@@ -2,38 +2,88 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "This is a Sample Question 1?",
+      "question": "What is the distance between [1,0,0] planes in FCC lattice given a is the length of the edge of the unit cell",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "0.5a",
+        "b": "a",
+        "c": "2a",
+        "d": "4a"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "b": "The distance between two [1,0,0] planes in FCC is a"
       },
-      "correctAnswer": "a",
+      "correctAnswer": "b",
       "difficulty": "beginner"
     },
     {
-      "question": "This is a Sample Question 2?",
+      "question": "What is the distance between [1,1,0] planes in FCC lattice given a is the length of the edge of the unit cell",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "0.5a",
+        "b": "a",
+        "c": "a/sqrt(3)",
+        "d": "a/sqrt(2)"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "d": "The distance between two [1,0,0] planes in FCC is a * (sqrt(2)/2)"
+      },
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+        {
+      "question": "How many different directions exist for the family of <100> Miller index in a simple cubic lattice?",
+      "answers": {
+        "a": "6",
+        "b": "9",
+        "c": "12",
+        "d": "15"
+      },
+      "explanations": {
+        "a": "There are 6 directions are they are [1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]"
+      },
+      "correctAnswer": "a",
+      "difficulty": "intermediate"
+    },
+        {
+      "question": "How many different directions exist for the family of <110> Miller index in a simple cubic lattice?",
+      "answers": {
+        "a": "6",
+        "b": "9",
+        "c": "12",
+        "d": "15"
+      },
+      "explanations": {
+        "c": "There are 12 directions and they are [1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[1,0,-1],[-1,0,1],[-1,0,-1],[0,1,1],[0,1,-1],[0,-1,1],[0,-1,-1]"
       },
       "correctAnswer": "c",
-      "difficulty": "beginner"
+      "difficulty": "intermediate"
+    },
+        {
+      "question": "What of these is true regarding distance between planes of one index [h,k,l]? (x2 = x * x)",
+      "answers": {
+        "a": "d = a/(h + k + l)",
+        "b": "d = a/sqrt(h + k +l)",
+        "c": "d = a/sqrt(h2 + k2 + l2)",
+        "d": "d = a/(h2 + k2 + l2)"
+      },
+      "explanations": {
+        "c": "This is the general formula"
+      },
+      "correctAnswer": "c",
+      "difficulty": "advanced"
+    },
+        {
+      "question": "In a closed packing, the direction in which there are atoms touching is called the closed packed direction of the lattice. Using this, what is the direction of Miller planes for the closed packed direction of a BCC lattice?",
+      "answers": {
+        "a": "<100>",
+        "b": "<111>",
+        "c": "<101>",
+        "d": "None of the above"
+      },
+      "explanations": {
+        "b": "The closed packed direction for a BCC lattice is the direction of the body diagonal."
+      },
+      "correctAnswer": "c",
+      "difficulty": "advanced"
     }
   ]
 }
