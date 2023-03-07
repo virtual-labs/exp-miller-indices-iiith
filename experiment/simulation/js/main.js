@@ -18,29 +18,45 @@ import {
   VerifyMiller,
   createLattice,
 } from './utils.js'
-
+// init container
 var container = document.getElementById('canvas-main')
-//  init camera
-var camera = new THREE.PerspectiveCamera(
-  75, //FOV
-  container.offsetWidth / container.offsetHeight, //aspect ratio
-  0.1,
-  1000,
-)
-camera.position.set(20, 20, 20)
 
 // init the renderer and the scene
-
 var scene = new THREE.Scene()
 var renderer = new THREE.WebGLRenderer({ antialias: true })
 renderer.setClearColor('#000000')
-renderer.setSize(container.offsetWidth, container.offsetHeight)
+renderer.setSize(container.clientWidth, container.clientHeight)
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
-// document.body.appendChild(renderer.domElement);
 container.appendChild(renderer.domElement)
 
-// console.log(window);
+// init perspective camera
+var camera_distance = 40
+var perspective_camera = new THREE.PerspectiveCamera(
+  camera_distance, //FOV
+  container.clientWidth / container.clientHeight, //aspect ratio
+  0.1,
+  1000,
+)
+var orthographic_camera = new THREE.OrthographicCamera(
+  camera_distance / -2,
+  camera_distance / 2,
+  camera_distance / 2,
+  camera_distance / -2,
+  1,
+  1000,
+)
+var camera = perspective_camera
+
+// init the orbit controls
+var controls = new OrbitControls(camera, renderer.domElement)
+controls.update()
+controls.autoRotate = true
+controls.autoRotateSpeed = 0
+controls.enablePan = false
+controls.enableDamping = true
+camera.position.set(25, 25, 25)
+
 // initialize the axes
 var axesHelper = new THREE.AxesHelper(container.clientHeight)
 scene.add(axesHelper)
@@ -50,13 +66,24 @@ const lights = AddLight()
 for (let i = 0; i < lights.length; i++) {
   scene.add(lights[i])
 }
-// init the orbit controls
-var controls = new OrbitControls(camera, renderer.domElement)
-controls.update()
-controls.autoRotate = true
-controls.autoRotateSpeed = 0
-controls.enablePan = false
-controls.enableDamping = true
+
+let Checked = document.getElementById('ToggleCamera')
+Checked.addEventListener('click', function () {
+  console.log('Clicked camera toggle')
+  if (Checked.checked) {
+    camera = orthographic_camera
+    controls = new OrbitControls(camera, renderer.domElement)
+  } else {
+    camera = perspective_camera
+    controls = new OrbitControls(camera, renderer.domElement)
+  }
+  controls.update()
+  controls.autoRotate = true
+  controls.autoRotateSpeed = 0
+  controls.enablePan = false
+  controls.enableDamping = true
+  camera.position.set(25, 25, 25)
+})
 
 // to check the current object which keyboard points to
 let INTERSECTED
@@ -92,26 +119,47 @@ document.addEventListener('mousemove', function (event) {
   mouse = getMouseCoords(event)
 })
 
-document.addEventListener('keydown', function (event) {
-  var keyCode = event.key
-  if (keyCode == 'd') {
-    DeleteObject(mouse, camera, scene, atomList, INTERSECTED)
-  }
-})
-
 let action = ''
 
 // create a list of atoms in scene
 var atomList = []
 
 var SelectAtomList = []
-var BoundaryAtomList = []
-var CurrentHull
-var CurrentHullMesh
-var HullMeshList = []
+
+var HullList = []
 
 var currentatom = document.getElementById('atomtype')
 var atomtype = currentatom.options[currentatom.selectedIndex].text
+
+let toggleselectbutton = document.getElementById('ToggleSelect')
+toggleselectbutton.addEventListener('click', function () {
+  if (action != 'selectAtom') {
+    action = 'selectAtom'
+  } else {
+    action = ''
+    // SelectAtomList = []
+  }
+})
+const Slider = document.getElementById('radiiSlider')
+const sliderval = document.getElementById('radiisliderval')
+sliderval.innerHTML = Slider.valueAsNumber
+var currentradii = Slider.valueAsNumber
+
+Slider.oninput = function () {
+  currentradii = Slider.valueAsNumber
+  sliderval.innerHTML = Slider.valueAsNumber
+  var newatomlist = []
+
+  for (let i = 0; i < atomList.length; i++) {
+    var pos = atomList[i].position
+    let atom = addSphereAtCoordinate(pos, 'Y')
+    scene.remove(atomList[i])
+    scene.add(atom)
+    newatomlist.push(atom)
+  }
+  atomList = newatomlist
+  SelectAtomList = []
+}
 
 const LatticeList = [
   'Simple Cubic',
@@ -125,29 +173,34 @@ var currentLattice =
 
 let currentAtomList = createLattice(LatticeList.indexOf(currentLattice))
 for (let i = 0; i < currentAtomList.length; i++) {
-  //   console.log(currentAtomList[i])
   scene.add(currentAtomList[i])
   atomList.push(currentAtomList[i])
 }
+
 currentLatticeElement.addEventListener('click', function () {
   currentLattice =
     currentLatticeElement.options[currentLatticeElement.selectedIndex].text
   // console.log('lattice change to', currentLattice)
-  for (let i = 0; i < currentAtomList.length; i++) {
-    scene.remove(currentAtomList[i])
+  for (let i = 0; i < atomList.length; i++) {
+    scene.remove(atomList[i])
   }
-  currentAtomList = []
-  for (let i = 0; i < HullMeshList.length; i++) {
-    scene.remove(HullMeshList[i])
+
+  for (let i = 0; i < HullList.length; i++) {
+    scene.remove(HullList[i])
   }
-  HullMeshList = []
+  HullList = []
   atomList = []
+  currentAtomList = []
+
   currentAtomList = createLattice(LatticeList.indexOf(currentLattice))
 
   for (let i = 0; i < currentAtomList.length; i++) {
     // console.log(currentAtomList[i])
     scene.add(currentAtomList[i])
     atomList.push(currentAtomList[i])
+  }
+  if (currentPlane) {
+    scene.remove(currentPlane[0])
   }
 })
 
@@ -206,6 +259,9 @@ CreatePlane.addEventListener('click', function () {
 
 const CheckMiller = document.getElementById('CheckMiller')
 CheckMiller.addEventListener('click', function () {
+  if (!currentPlane) {
+    alert('please create a plane first')
+  }
   let lbl = document.getElementById('miller-result')
   if (VerifyMiller(currentPlane, millertype) == 1) {
     lbl.innerHTML = "<span style='color: green;'>Correct</span>"
@@ -214,16 +270,15 @@ CheckMiller.addEventListener('click', function () {
   }
 })
 
-// respond to select a bunch of atoms
-const addSelectList = document.getElementById('SelectAtom')
-addSelectList.addEventListener('click', function () {
-  console.log('selecting atom mode')
-  if (action != 'selectAtom') {
-    action = 'selectAtom'
-  } else {
-    action = ''
-    SelectAtomList = []
+const ClearStuff = document.getElementById('ClearSelection')
+ClearStuff.addEventListener('click', function () {
+  SelectAtomList = []
+  for (let i = 0; i < HullList.length; i++) {
+    scene.remove(HullList[i])
   }
+  HullList = []
+  scene.remove(currentPlane[0])
+  //add vector removal here
 })
 
 // make the window responsive
@@ -243,7 +298,12 @@ document.addEventListener('mouseup', function (event) {
     } else if (action == 'selectAtom') {
       INTERSECTED = CheckHover(mouse, camera, atomList, INTERSECTED)
       if (INTERSECTED) {
-        SelectAtomList.push(INTERSECTED)
+        if (SelectAtomList.includes(INTERSECTED)) {
+          var indexofatom = SelectAtomList.indexOf(INTERSECTED)
+          SelectAtomList.splice(indexofatom, 1)
+        } else {
+          SelectAtomList.push(INTERSECTED)
+        }
       }
     } else if (action == 'selectAll') {
       SelectAtomList = []
@@ -255,8 +315,25 @@ document.addEventListener('mouseup', function (event) {
 })
 
 createAGrid()
-// console.log('added system')
-
+//delete atom
+document.addEventListener('keydown', function (event) {
+  var keyCode = event.key
+  if (keyCode == 'd') {
+    // DeleteObject(mouse, camera, scene, atomList, SelectAtomList, INTERSECTED)
+    INTERSECTED = CheckHover(mouse, camera, atomList)
+    if (INTERSECTED) {
+      var index = atomList.indexOf(INTERSECTED)
+      if (index > -1) {
+        atomList.splice(index, 1)
+      }
+      var index = SelectAtomList.indexOf(INTERSECTED)
+      if (index > -1) {
+        SelectAtomList.splice(index, 1)
+      }
+      scene.remove(INTERSECTED)
+    }
+  }
+})
 // render the scene and animate
 var render = function () {
   //   console.log(SelectAtomList)
