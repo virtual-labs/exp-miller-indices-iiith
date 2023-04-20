@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.5-b/css/style.min.css"
+        />
+        <link rel="stylesheet" href="./css/main.css" />
+    </head>
+
+    <body class="page" style="margin: 1rem">
+        <section class="columns is-centered is-flex column">
+            <div class="v-collapsible-instruction-container">
+                <div class="v-collapsible">Instructions</div>
+                <div id="procedure-message" class="v-content">
+                    <li class="instr-font">
+                        This experiment is designed to teach how to visualize the planes in a
+                        crystal lattice using miller indices.
+                    </li>
+                    <li class="instr-font">
+                        You will be given a 3D grid with a lattice rendered on the screen. For a
+                        given dropdown miller indices, the user should select any three atoms that
+                        construct this miller plane.
+                    </li>
+                    <li class="instr-font">
+                        Clicking 'create plane' will create a plane passing through the selected
+                        points.
+                    </li>
+                    <li class="instr-font">
+                        Check Miller index will compute the miller index for the constructed plane
+                        and will validate with the current miller index of interest in the dropdown
+                        just below.
+                    </li>
+                    <li class="instr-font">
+                        Depending on whether the plane constructed has the given miller index then
+                        it will results in a 'correct' / 'incorrect' result on the observation
+                        section on the right.
+                    </li>
+                </div>
+            </div>
+        </section>
+
+        <main
+            class="columns is-centered is-variable is-1-mobile is-flex is-flex-wrap-wrap workspace"
+        >
+            <aside id="left" class="column is-3-desktop is-5-tablet is-5-mobile apparatus">
+                <div class="v-datalist-container">
+                    <div class="v-datalist-row">
+                        <div class="v-datalist-title">
+                            Current Atom:
+                            <select class="dropbtn" name="atomtype" id="atomtype">
+                                <option value="X">X</option>
+                            </select>
+                        </div>
+                        <br />
+                        <div class="v-datalist-title">
+                            Current Lattice:
+                            <select id="LatticeList">
+                                <option value="Rectangular Lattice">Simple Cubic</option>
+                                <option value="Face Centered Cubic">Face Centered Cubic</option>
+                                <option value="Body Centered Cubic">Body Centered Cubic</option>
+                                <option value="Hexagonal Packing">Hexagonal Packing</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="v-datalist-row" id="top-border">
+                        <div>
+                            <div class="v-datalist-title" id="disp-heading">Toggle Select mode</div>
+                            <label class="switch">
+                                <input type="checkbox" id="ToggleSelect" />
+                                <span class="slider round"> </span>
+                            </label>
+                        </div>
+                        <div>
+                            <div class="v-datalist-title" id="disp-heading">Toggle camera</div>
+                            <label class="switch">
+                                <input type="checkbox" id="ToggleCamera" />
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="v-datalist-row" id="top-border">
+                        <div class="v-datalist-title" id="disp-heading">
+                            Change radius of atoms using slider
+                        </div>
+
+                        <div class="slidecontainer">
+                            <input
+                                type="range"
+                                min="0.1"
+                                max="10"
+                                value="0.4"
+                                step="0.1"
+                                class="radiislider"
+                                id="radiiSlider"
+                            />
+                            <p>Value: <span id="radiisliderval"></span></p>
+                        </div>
+                    </div>
+                    <div class="v-datalist-row" id="top-border">
+                        <input
+                            class="button is-responsive is-small is-link"
+                            style="margin: 0.5rem"
+                            id="CreatePlane"
+                            type="submit"
+                            value="CREATE PLANE"
+                        />
+                        <br />
+                        <input
+                            class="button is-responsive is-small is-link"
+                            style="margin: 0.5rem"
+                            id="ClearSelection"
+                            type="submit"
+                            value="CLEAR SELECTIONS"
+                        />
+                    </div>
+
+                    <div class="v-datalist-row" id="top-border">
+                        <div class="v-datalist-title">
+                            Construct the plane with the following miller indices
+                        </div>
+                        <br />
+                        <select class="dropbtn" name="millertype" id="millertype">
+                            <option value="001">0 0 1</option>
+                            <option value="010">0 1 0</option>
+                            <option value="011">0 1 1</option>
+                            <option value="100">1 0 0</option>
+                            <option value="101">1 0 1</option>
+                            <option value="110">1 1 0</option>
+                            <option value="111">1 1 1</option>
+                        </select>
+                    </div>
+                    <div class="v-datalist-row" id="top-border">
+                        <input
+                            class="button is-responsive is-small is-link"
+                            style="margin: 0.5rem"
+                            id="CheckMiller"
+                            type="submit"
+                            value="CHECK MILLER INDEX"
+                        />
+                    </div>
+                </div>
+            </aside>
+
+            <aside id="center" class="column is-7-desktop is-8-tablet is-8-mobile apparatus">
+                <div class="v-canvas-container" id="canvas-main"></div>
+            </aside>
+            <aside id="right" class="column is-2-desktop is-5-tablet is-5-mobile apparatus">
+                <div class="v-datalist-container">
+                    <div class="v-datalist-title">Observations</div>
+                    <div class="v-datalist-row" id="top-border"></div>
+                    <label class="v-datalist-title" id="miller-result"></label>
+                </div>
+            </aside>
+        </main>
+        <script type="module" src="js/three.js"></script>
+        <script type="module" src="js/orbit.js"></script>
+        <script type="module" src="js/main.js"></script>
+        <script type="module" src="js/convex.js"></script>
+        <script type="module" src="js/hull.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
+    <script src="../assets/js/iframeResize.js"></script></body>
+</html>
